@@ -1,108 +1,144 @@
 import {
   LineChart,
   Line,
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RiResetLeftLine } from "react-icons/ri";
+import chartData from "@/data/ChartData";
+import CustomTooltip from "./Tooltip";
+import { convertFromInputFormat, convertToInputFormat } from "@/utils/ChartUtils";
+
+type DataPoint = {
+  date: string;
+  nav: number;
+};
 
 const ChartComponent = () => {
   const [dateFilter, setDateFilter] = useState({
-    from: "2019-01-01",
-    to: "2024-04-24",
+    from: chartData[chartData.length - 1].date, 
+    to: chartData[0].date, 
   });
+  const [filteredData, setFilteredData] = useState<DataPoint[]>(chartData);
 
-  const data = [
-    { date: "2019-01-01", nav: 100, drawdown: 0 },
-    { date: "2019-06-01", nav: 110, drawdown: -5 },
-    { date: "2020-01-01", nav: 130, drawdown: -10 },
-    { date: "2020-06-01", nav: 120, drawdown: -15 },
-    { date: "2021-01-01", nav: 150, drawdown: -2 },
-    { date: "2022-01-01", nav: 180, drawdown: 0 },
-    { date: "2023-01-01", nav: 200, drawdown: -1 },
-    { date: "2024-04-24", nav: 210, drawdown: 0 },
-  ];
+  const parseCustomDate = (dateString: string): Date => {
+    const [day, month, year] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
 
-  const filteredData = data.filter(
-    (d) => d.date >= dateFilter.from && d.date <= dateFilter.to
-  );
+  useEffect(() => {
+    const fromDate = parseCustomDate(dateFilter.from);
+    const toDate = parseCustomDate(dateFilter.to);
+
+    const filtered = chartData.filter((d) => {
+      const dDate = parseCustomDate(d.date);
+      return dDate >= fromDate && dDate <= toDate;
+    });
+
+    setFilteredData(filtered);
+  }, [dateFilter]);
 
   return (
-    <div>
-      <div className="flex justify-between mb-5">
-        <div>
-          <h3 className="font-semibold mb-2 mt-5">Equity curve</h3>
-
-          <div className="flex items-center justify-between text-[11px] text-gray-500">
-            <p>Live since 2019-01-01</p>
-            <button className="flex items-center gap-1 text-green-500 text-xs pl-2">
-              <RiResetLeftLine />
-              <span>Reset</span>
-            </button>
+    <div className="bg-white rounded-lg shadow p-6">
+      <div>
+        <div className="flex justify-between mb-5">
+          <div>
+            <h2 className="text-xl font-bold mb-2">Equity curve</h2>
+            <div className="flex items-center justify-between text-sm text-gray-500">
+              <p>Live since {chartData[chartData.length - 1].date}</p>
+              <button
+                className="flex items-center gap-1 text-green-600 text-sm pl-2 cursor-pointer"
+                onClick={() => window.location.reload() }
+                >
+                <RiResetLeftLine />
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+          <div className="flex gap-4 mb-3 items-center justify-end">
+            <label className="text-sm flex flex-col gap-1">
+              From date
+              <input
+                type="date"
+                value={convertToInputFormat(dateFilter.from)}
+                onChange={(e) =>
+                  setDateFilter({
+                    ...dateFilter,
+                    from: convertFromInputFormat(e.target.value),
+                  })
+                }
+                className="border border-gray-300 p-2 text-sm rounded"
+              />
+            </label>
+            <label className="text-sm flex flex-col gap-1">
+              To date
+              <input
+                type="date"
+                value={convertToInputFormat(dateFilter.to)}
+                onChange={(e) =>
+                  setDateFilter({
+                    ...dateFilter,
+                    to: convertFromInputFormat(e.target.value),
+                  })
+                }
+                className="border border-gray-300 p-2 text-sm rounded"
+              />
+            </label>
           </div>
         </div>
 
-        <div className="flex gap-4 mb-3 items-center justify-end">
-          <label className="text-xs flex flex-col gap-1">
-            From date
-            <input
-              type="date"
-              value={dateFilter.from}
-              onChange={(e) =>
-                setDateFilter({ ...dateFilter, from: e.target.value })
-              }
-              className="border border-gray-300 ml-1 p-1 text-xs rounded"
-            />
-          </label>
-          <label className="text-xs flex flex-col gap-1">
-            To date
-            <input
-              type="date"
-              value={dateFilter.to}
-              onChange={(e) =>
-                setDateFilter({ ...dateFilter, to: e.target.value })
-              }
-              className="border border-gray-300 ml-1 p-1 text-xs rounded"
-            />
-          </label>
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={filteredData}>
+              <CartesianGrid vertical={false} stroke="#e5e7eb" />
+
+              <XAxis hide dataKey="date" />
+
+              <YAxis
+                domain={[0, (dataMax: number) => dataMax * 1.1]} 
+                tick={{ fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(value) => value.toFixed(0)} 
+                ticks={Array.from({ length: 10 }, (_, i) => {
+                  const max = Math.max(...filteredData.map((d) => d.nav));
+                  return (max / 7) * i; 
+                })}
+              />
+
+              <Tooltip content={<CustomTooltip />} />
+
+              <Line
+                type="monotone"
+                dataKey="nav"
+                stroke="#22c55e"
+                strokeWidth={3}
+                dot={false}
+                activeDot={{ r: 6, fill: "#22c55e" }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
+          <div>
+            Valid as of{" "}
+            {new Date().toLocaleDateString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+            <span>Portfolio</span>
+          </div>
         </div>
       </div>
-
-      <ResponsiveContainer width="100%" height={270}>
-        <LineChart data={filteredData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-          <XAxis dataKey="date" />
-          <YAxis yAxisId="left" domain={["auto", "auto"]} />
-          <Tooltip />
-          <Line
-            yAxisId="left"
-            type="monotone"
-            dataKey="nav"
-            stroke="#22c55e"
-            strokeWidth={2}
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-      <ResponsiveContainer width="100%" height={150}>
-        <AreaChart data={filteredData}>
-          <XAxis dataKey="date" hide />
-          <YAxis domain={["auto", 0]} hide />
-          <Tooltip />
-          <Area
-            type="monotone"
-            dataKey="drawdown"
-            stroke="#be123c"
-            fill="#fecaca"
-          />
-        </AreaChart>
-      </ResponsiveContainer>
     </div>
   );
 };
