@@ -15,10 +15,10 @@ import type SidebarRef from "@/interfaces/SidebarRef";
 import { motion, AnimatePresence } from "framer-motion";
 
 const sidebarItems = [
-  { name: "Home", path: "/dashboard", icon: <FiHome color="gray" size={18} /> },
+  { name: "Home", path: "/", icon: <FiHome color="gray" size={18} /> },
   {
     name: "Portfolios",
-    path: "/dashboard/portfolio",
+    path: "/portfolio",
     icon: <BsSuitcaseLg color="gray" size={18} />,
   },
   {
@@ -50,7 +50,7 @@ const sidebarItems = [
 
 type SidebarProps = {};
 
-const Sidebar = forwardRef<SidebarRef, SidebarProps>((props, ref) => {
+const Sidebar = forwardRef<SidebarRef, SidebarProps>((_props, ref) => {
   const sidebarRef = useRef<SidebarComponent>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -166,7 +166,6 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>((props, ref) => {
              </motion.nav>
            </div>
      
-           {/* Footer pinned at bottom */}
            <motion.div
              className="pt-4 flex justify-between px-4 gap-3 text-xs text-gray-500 "
              initial={{ opacity: 0, y: 20 }}
