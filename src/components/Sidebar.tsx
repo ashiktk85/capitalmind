@@ -78,9 +78,9 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>((props, ref) => {
     <SidebarComponent
       ref={sidebarRef}
       width={250}
-      type={isMobile ? "Over" : "Push"}
-      enableGestures={true}
-      closeOnDocumentClick={true}
+      // type={isMobile ? "Over" : "Push"}
+      // enableGestures={true}
+      // closeOnDocumentClick={true}
       isOpen={isMobile ? isOpen : true}
       style={{
         position: "fixed",
