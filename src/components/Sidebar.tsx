@@ -23,27 +23,27 @@ const sidebarItems = [
   },
   {
     name: "Experimentals",
-    path: "/dashboard/experimentals",
+    path: "/experimentals",
     icon: <IoFlaskOutline color="gray" size={18} />,
   },
   {
     name: "Slack Archives",
-    path: "/dashboard/slack-archives",
+    path: "/slack-archives",
     icon: <FiArchive color="gray" size={18} />,
   },
   {
     name: "Refer a friend",
-    path: "/dashboard/refer",
+    path: "/refer",
     icon: <LuUserPlus color="gray" size={18} />,
   },
   {
     name: "Gift a subscription",
-    path: "/dashboard/gift",
+    path: "/gift",
     icon: <FiGift color="gray" size={18} />,
   },
   {
     name: "Account",
-    path: "/dashboard/account",
+    path: "/account",
     icon: <FiUser color="gray" size={18} />,
   },
 ];
@@ -68,11 +68,12 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>((_props, ref) => {
     hide: () => setIsOpen(false),
   }));
 
-  const isActiveItem = (itemPath: any) => {
-    if (itemPath === "/dashboard") {
-      return location.pathname === "/dashboard";
+  const isActiveItem = (itemPath: string) => {
+    if (itemPath === "/" || itemPath === "/portfolio") {
+      return location.pathname === itemPath;
     }
-    return location.pathname.startsWith(itemPath);
+
+    return location.pathname === itemPath || location.pathname.startsWith(itemPath + "/");
   };
 
   return (

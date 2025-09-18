@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import DashboardHome from "@/pages/Dashboard";
 import Portfolio from "@/pages/Portfolio";
+import Experimentals from "./pages/Experimentals";
+import SlackArchives from "./pages/SlackArchives";
+import Refer from "./pages/Refer";
 
 
 export default function App() {
@@ -11,6 +14,9 @@ export default function App() {
         <Route path="/" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
           <Route path="portfolio" element={<Portfolio />} />
+          <Route path="experimentals" element={<Experimentals />} />
+          <Route path="slack-archives" element={<SlackArchives />} />
+          <Route path="refer" element={<Refer />} />
         </Route>
       </Routes>
     </BrowserRouter>
