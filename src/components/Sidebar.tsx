@@ -8,7 +8,7 @@ export default function Sidebar() {
   return (
     <SidebarComponent
       ref={sidebarRef}
-      width={270}
+      width={250}
       type="Push" 
       enableGestures={false}
     >
