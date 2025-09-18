@@ -29,7 +29,7 @@ export default function DashboardLayout() {
       <Sidebar ref={sidebarRef} />
 
       <div
-        className={`flex-1 bg-gray-50 p-3 sm:p-6 min-h-screen transition-all duration-300`}
+        className={`flex-1 bg-gray-100 p-3 sm:p-6 min-h-screen transition-all duration-300`}
         style={{ marginLeft: isMobile ? 0 : 250 }} 
       >
         <Outlet />

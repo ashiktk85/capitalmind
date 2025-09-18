@@ -19,7 +19,7 @@ const LatestPosts = () => (
         href="/posts"  
         className="inline-block bg-green-600 text-white text-sm font-semibold py-2 px-6 rounded hover:bg-green-700 transition-colors"
       >
-        Go to Posts
+        Show more
       </a>
     </div>
     </section>
